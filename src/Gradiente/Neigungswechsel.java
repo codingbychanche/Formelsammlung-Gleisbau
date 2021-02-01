@@ -50,8 +50,8 @@ public class Neigungswechsel {
 	/**
 	 * Beliebiger Ordinatenwert.
 	 * 
-	 * @param xn_m Abszissemwert für den gesuchten Ordinatenwert in metern.
-	 * @return Ordinatenwert in metern.
+	 * @param xn_m Abszissemwert für den gesuchten Ordinatenwert in [m].
+	 * @return Ordinatenwert in [m].
 	 */
 	public float getYn_m(float xn_m) {
 		return (xn_m * xn_m) / (2 * this.ra_m);
@@ -67,11 +67,59 @@ public class Neigungswechsel {
 	 * @return Anzahl der vollen fünf Meter Abschnitte zwischen dem ersten und dem
 	 *         letzten Ordinatenwert zwischen AA und NW.
 	 */
-	public int getAnzahlFuenfMeterAbschnitte(float x1_m) {
+	public int getAnzahlFuenfMeterAbschnitte_m(float x1_m) {
 		return (int) (getLt_m() - x1_m) / 5;
 
 	}
+	
+	/**
+	 * Liefert den Abstand xal vom Ausrundungsbogenanfang (AA) bis zum ersten
+	 * Ordinatenwert auf dem 5- Meter Raster.
+	 * 
+	 * @return Abstand AA bis zum ersten Ordinatenwert auf dem 5-Meter Raster in [m]
+	 */
+	public float getAbstandAABisErsteOrdinate_m() {
+		float kmAA_m=((getKm_km()*1000)-getLt_m());
+		float kmAAGerundet_m=(int)(kmAA_m/5)*5;
+		return 5-(kmAA_m-kmAAGerundet_m);
+	}
 
+	/**
+	 * Liefert den Abstand xel vom Tangentenschnittpunkt (NW) bis zum letzten Ordinatenwert
+	 * auf der Linken Seite des NW.
+	 * 
+	 * @return Abstand NW bis zum letzten Ordinatenwert links vom NW.
+	 */
+	public float getAbstandNWBisLetzteOrdinateLinks() {
+		float kmNW_m=getKm_km()*1000;
+		float kmNWGerundet_m=(int)(kmNW_m/5)*5;
+		return kmNW_m-kmNWGerundet_m;
+	}
+	
+	/**
+	 * Liefert den Abstand xer vom Ausrundungsbogenende (AE) bis zum 
+	 * ersten Ordinatenwert in [m].
+	 * 
+	 * @return Abstand AE bis zum ersten Ordinatenwert.
+	 */
+	public float getAbstandAEBisErsteOrdinate_m() {
+		float kmAE_m=(getKm_km()*1000)+90;
+		float kmAEGerundet_m=(int)(kmAE_m/5)*5;
+		return kmAE_m-kmAEGerundet_m;
+	}
+	
+	/**
+	 * Liefert den Abstand xer vom Tangentenschnittpukt (NW) bis zum letzte
+	 * Ordinatenwert auf der rechten Seite des NW in [m].
+	 * 
+	 * @return Abstand NW bis zum letzten Ordinatenwert rechts vom NW.
+	 */
+	public float getAbstandNWLetzteOrdinateRechts_m() {
+		float kmNW_m=getKm_km()*1000;
+		float kmNWGerundet_m=(int)(kmNW_m/5)*5;
+		return 5-(kmNW_m-kmNWGerundet_m);
+	}
+	
 	/**
 	 * Berechnet alle Ordinatenwerte vom Ausrundungsbogen- Anfang (AA) aus in
 	 * Richtung der Auftseigenden Kilometrierung bis zum Tangentenschnittpunkt
@@ -85,11 +133,12 @@ public class Neigungswechsel {
 	 * Die Abstände von den jeweils letzten Ordinatenwerten vor dem
 	 * Tangendenschnittpunkt werden aus den gegebenen Werten berechnet.
 	 * 
-	 * @param x1_m  Abstand vom AA bis zum ersten Ordinatenwert.
-	 * @param x11_m Abstand vom AE bis zum letzten Ordinatenwert.
 	 * @return Die errechneten Ordinatenwerte.
 	 */
-	public List<Ordinatenwert> getYn_m(float x1_m, float x11_m) {
+	public List<Ordinatenwert> getYn_m() {
+		float x1_m=getAbstandAABisErsteOrdinate_m();
+		float x11_m=getAbstandAEBisErsteOrdinate_m();
+		
 		List<Ordinatenwert> ynResultList_m = new ArrayList();
 
 		// Wir beginnen bei AA
@@ -99,7 +148,7 @@ public class Neigungswechsel {
 		float xn_m = x1_m;
 
 		// Abstand vom letzten Ordinatenwert bis zum Tangendenschnittpunkt.
-		int fuenfMeterAbschnitte = getAnzahlFuenfMeterAbschnitte(x1_m);
+		int fuenfMeterAbschnitte = getAnzahlFuenfMeterAbschnitte_m(x1_m);
 		float xe_m = getLt_m() - (x1_m + 5 * fuenfMeterAbschnitte);
 
 		float yn_m = getYn_m(xn_m);
@@ -113,7 +162,7 @@ public class Neigungswechsel {
 
 		// Jetzt a
 		xn_m = xn_m + xe_m;
-		ynResultList_m.add(new Ordinatenwert("a", xn_m, getA_m()));
+		ynResultList_m.add(new Ordinatenwert("xa", xn_m, getA_m()));
 
 		// Nun der zweite Parabelast vom AE in Richtung der
 		// absteigenden Kilometrierung zum Tangentenschnittpunkt hin.
@@ -124,7 +173,7 @@ public class Neigungswechsel {
 		// Erster Ordinatenwert nach AE
 		xn_m = x11_m;
 
-		fuenfMeterAbschnitte = getAnzahlFuenfMeterAbschnitte(x11_m);
+		fuenfMeterAbschnitte = getAnzahlFuenfMeterAbschnitte_m(x11_m);
 		float xee_m = getLt_m() - (x11_m + 5 * fuenfMeterAbschnitte);
 
 		// Erster Ordinatenwert nach den Tangendenschnittpunkt..
@@ -138,9 +187,43 @@ public class Neigungswechsel {
 
 		// Jetzt a
 		xn_m = xn_m + xee_m;
-		ynResultList_m.add(new Ordinatenwert("a", xn_m, getA_m()));
+		ynResultList_m.add(new Ordinatenwert("xa", xn_m, getA_m()));
 
 		// Ergebnis...
 		return ynResultList_m;
 	}
+
+	public float getKm_km() {
+		return km_km;
+	}
+
+	public void setKm_km(float km_km) {
+		this.km_km = km_km;
+	}
+
+	public float getS1_P() {
+		return s1_P;
+	}
+
+	public void setS1_P(float s1_P) {
+		this.s1_P = s1_P;
+	}
+
+	public float getS2_P() {
+		return s2_P;
+	}
+
+	public void setS2_P(float s2_P) {
+		this.s2_P = s2_P;
+	}
+
+	public float getRa_m() {
+		return ra_m;
+	}
+
+	public void setRa_m(float ra_m) {
+		this.ra_m = ra_m;
+	}
+	
+	
 }
