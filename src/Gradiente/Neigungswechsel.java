@@ -15,7 +15,10 @@ public class Neigungswechsel {
 	float km_km, s1_P, s2_P, ra_m;
 
 	/**
-	 * Neigungswechsel
+	 * Neigungswechsel.
+	 * 
+	 * Die folgenden Parameter beschreiben den Neigumngswechsel. Alle anderen Parameter
+	 * können daraus berechnet werden.
 	 * 
 	 * @param km_km	Stationierung des Tangentenschnittpunktes.
 	 * @param s1_P	Ankommendes Gefälle auf den Neigungswechsel zu.
@@ -97,13 +100,13 @@ public class Neigungswechsel {
 	}
 	
 	/**
-	 * Liefert den Abstand xer vom Ausrundungsbogenende (AE) bis zum 
+	 * Liefert den Abstand xar vom Ausrundungsbogenende (AE) bis zum 
 	 * ersten Ordinatenwert in [m].
 	 * 
 	 * @return Abstand AE bis zum ersten Ordinatenwert.
 	 */
 	public float getAbstandAEBisErsteOrdinate_m() {
-		float kmAE_m=(getKm_km()*1000)+90;
+		float kmAE_m=(getKm_km()*1000)+getLt_m();
 		float kmAEGerundet_m=(int)(kmAE_m/5)*5;
 		return kmAE_m-kmAEGerundet_m;
 	}

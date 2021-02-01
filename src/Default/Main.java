@@ -11,12 +11,12 @@ public class Main {
 		System.out.println("Demo");
 		System.out.println("");
 		
-		Neigungswechsel nw=new Neigungswechsel(1.79398f,-2.152f,6.749f,20223.0f);
+		Neigungswechsel nw=new Neigungswechsel(214.64540f,-1.567f,-5.098f,10000.0f);
 		
 		// Die Basic's...
 		float a_m=nw.getA_m();
 		float lt_m=nw.getLt_m();
-		System.out.println("a="+a_m+"  lt="+lt_m);
+		System.out.println("a="+a_m+"m  lt="+lt_m+"m   ra="+nw.getRa_m()+"m");
 		System.out.println("");
 		
 		// Tangenden Aufteilung der Abzisse
@@ -45,7 +45,7 @@ public class Main {
 		List <Ordinatenwert>yn_m=nw.getYn_m();
 		
 		for (Ordinatenwert o: yn_m)
-			System.out.println(o.getName()+"="+o.getX_m()+"  y="+(o.getY_m()*1000));
+			System.out.println(o.getName()+"=\t "+o.getX_m()+"m  \t y="+(o.getY_m()*1000)+"mm");
 		
 		
 	}
