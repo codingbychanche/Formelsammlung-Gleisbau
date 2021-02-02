@@ -2,16 +2,28 @@ package Default;
 
 import java.util.List;
 
+import Allgemeines.KoordinatenPaar;
 import Gradiente.Neigungswechsel;
-import Gradiente.Ordinatenwert;
 
+
+/**
+ * Demonstrations Programm zur Formelsammlung Gleisbau.
+ * 
+ * @author Berthold
+ *
+ */
 public class Main {
 
+	/**
+	 * Main Methode.
+	 * 
+	 * @param args	Nix erforderlich.
+	 */
 	public static void main (String args []) {
 		System.out.println("Demo");
 		System.out.println("");
 		
-		Neigungswechsel nw=new Neigungswechsel(214.64540f,-1.567f,-5.098f,10000.0f);
+		Neigungswechsel nw=new Neigungswechsel(1.80000f,6.749f,-5.454f,10653.0f);
 		
 		// Die Basic's...
 		float a_m=nw.getA_m();
@@ -19,12 +31,18 @@ public class Main {
 		System.out.println("a="+a_m+"m  lt="+lt_m+"m   ra="+nw.getRa_m()+"m");
 		System.out.println("");
 		
+		// Formeln im Klartext
+		System.out.println(nw.getFormelRaHtml().getFormelImKlartext()+"\tQuelle:"+nw.getFormelRaHtml().getQuellenAngabe());
+		System.out.println(nw.getFormelLtHtml().getFormelImKlartext()+"\tQuelle:"+nw.getFormelLtHtml().getQuellenAngabe());
+		System.out.println(nw.getFormelAHtml().getFormelImKlartext()+"\tQuelle:"+nw.getFormelAHtml().getQuellenAngabe());
+		System.out.println("");
+		
 		// Tangenden Aufteilung der Abzisse
 		// AA
 		float abstandRasterAAErsteOrdinate_m=nw.getAbstandAABisErsteOrdinate_m();
 		System.out.println("xal="+abstandRasterAAErsteOrdinate_m);
 		
-		System.out.println("Anzhal 5 Meter- Abschnitte AA bis NW:"+nw.getAnzahlFuenfMeterAbschnitte_m(abstandRasterAAErsteOrdinate_m));
+		System.out.println("Anzahl 5 Meter- Abschnitte AA bis NW:"+nw.getAnzahlFuenfMeterAbschnitte_m(abstandRasterAAErsteOrdinate_m));
 		
 		float abstandRasterNWLetzteOrdinateLinks_m=nw.getAbstandNWBisLetzteOrdinateLinks();
 		System.out.println("xel="+abstandRasterNWLetzteOrdinateLinks_m);
@@ -42,10 +60,10 @@ public class Main {
 		System.out.println("");
 		
 		// Ordinatenwerte
-		List <Ordinatenwert>yn_m=nw.getYn_m();
+		List <KoordinatenPaar>yn_m=nw.getYn_m();
 		
-		for (Ordinatenwert o: yn_m)
-			System.out.println(o.getName()+"=\t "+o.getX_m()+"m  \t y="+(o.getY_m()*1000)+"mm");
+		for (KoordinatenPaar o: yn_m)
+			System.out.println(o.getBezeichnungX()+"=\t "+o.getX()+"m  \t y="+(o.getY()*1000)+"mm");
 		
 		
 	}
