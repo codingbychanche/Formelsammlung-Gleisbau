@@ -6,6 +6,7 @@ import java.util.List;
 import Allgemeines.KoordinatenPaar;
 import Gradiente.Neigungswechsel;
 import GleisModell.Gleis;
+import GleisModell.Verwindung;
 
 
 /**
@@ -76,7 +77,7 @@ public class Main {
 		Gleis myGleis=new Gleis("Demo",1,0.5,100);
 		
 		// Sinusförmige Welle in der linken Schiene.
-		// Erster Nullopunkt ist bei 0 m. die Amplitute beträgt 0.025 m
+		// Erster Nullpunkt ist bei 0 m. die Amplitute beträgt 0.025 m
 		myGleis.erzeugeWelleLinkeSchiene(0.0,0.025);
 		List <Double> linkeSchiene=new ArrayList<Double>();
 		linkeSchiene=myGleis.getLaengshoeheLinkeSchiene();
@@ -85,14 +86,14 @@ public class Main {
 		double meterVomGleisanfang=0;
 		double gh_m=0;
 		for (Double y:linkeSchiene) {
-			gh_m=myGleis.getGH_m(meterVomGleisanfang);
+			gh_m=Verwindung.getGH_m(myGleis,meterVomGleisanfang);
 			System.out.println("x ="+x+"   Meter:"+meterVomGleisanfang+"    y="+y+" GH="+gh_m);
 			x++;
 			meterVomGleisanfang=x*myGleis.getWegschritt_m();
 		}
 		
 		
-		double vw_p=myGleis.getVerwindung_P(100,3.6);
+		double vw_p=Verwindung.getVerwindung_P(myGleis,100,3.6);
 		System.out.println("VW="+vw_p+" Promille");
 	}
 }

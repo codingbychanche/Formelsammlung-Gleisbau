@@ -39,8 +39,32 @@ public class Gleis {
 		this.gleisNummer = nummer;
 		this.wegschritt_m = wegschritt_m;
 		this.laenge_m = laenge_m;
-		this.erzeugeLaengshoeheLinkeSchiene_m();
-		this.erzeugeLaengshoeheRechteSchiene_m();
+		this.löscheLaengshoeheLinkeSchiene_m();
+		this.löscheLaengshoeheRechteSchiene_m();
+	}
+
+	/**
+	 * Ersetzt den bestehenden Wert der Längshöhe in der linken Schiene durch den
+	 * neu übergebenen.
+	 * 
+	 * @param imMeterVomGleisanfang Position bezogen auf den Gleisanfang in [m]
+	 * @param längshöhe_m           Neuer Wert für die Längshöhe [m|
+	 */
+	public void setzeLängshöheLinkeSchiene_m(double imMeterVomGleisanfang, double längshöhe_m) {
+		int indexMesspunkt = this.getMesspunkt_m(imMeterVomGleisanfang);
+		this.laengshoeheLinkeSchiene.set(indexMesspunkt, längshöhe_m);
+	}
+
+	/**
+	 * Ersetzt den bestehenden Wert der Längshöhe in der rechten Schiene durch den
+	 * neu übergebenen.
+	 * 
+	 * @param imMeterVomGleisanfang Position bezogen auf den Gleisanfang in [m]
+	 * @param längshöhe_m           Neuer Wert für die Längshöhe [m|
+	 */
+	public void setzeLängshöheRechteSchiene_m(double imMeterVomGleisanfang, double längshöhe_m) {
+		int indexMesspunkt = this.getMesspunkt_m(imMeterVomGleisanfang);
+		this.laengshoeheRechteSchiene.set(indexMesspunkt, längshöhe_m);
 	}
 
 	/**
@@ -48,7 +72,7 @@ public class Gleis {
 	 * linken Schienenstrang des Gleises ohne Längshöhenfehler oder löscht eventuell
 	 * bereits vorhandene Werte.
 	 */
-	public void erzeugeLaengshoeheLinkeSchiene_m() {
+	public void löscheLaengshoeheLinkeSchiene_m() {
 		int anzahlMesspunkte = this.getAnzahlMesspunkte();
 		for (int n = 0; n <= anzahlMesspunkte; n++)
 			this.laengshoeheLinkeSchiene.add(0.0);
@@ -68,7 +92,7 @@ public class Gleis {
 	 * rechten Schienenstrang des Gleises ohne Längshöhenfehler oder löscht
 	 * eventuell bereits vorhandene Werte.
 	 */
-	public void erzeugeLaengshoeheRechteSchiene_m() {
+	public void löscheLaengshoeheRechteSchiene_m() {
 		int anzahlMesspunkte = this.getAnzahlMesspunkte();
 		for (int n = 0; n <= anzahlMesspunkte; n++)
 			this.laengshoeheRechteSchiene.add(0.0);
@@ -95,6 +119,16 @@ public class Gleis {
 	}
 
 	/**
+	 * Index eines Messpunktes ermitteln.
+	 * 
+	 * @param imMeterVonGleisanfang_m
+	 * @return Index des zur Ortsangabe passenden Messpunktes.
+	 */
+	public int getMesspunkt_m(double imMeterVonGleisanfang_m) {
+		return (int) (imMeterVonGleisanfang_m / this.wegschritt_m);
+	}
+
+	/**
 	 * Wegschritt.
 	 * 
 	 * @return Abstand zwischen den Messpunkten in [m].
@@ -105,7 +139,7 @@ public class Gleis {
 
 	/**
 	 * Erzeugt eine sinusförmige Welle in der linken Schiene über die gesammte Länge
-	 * des Gleises. Besthende Werte werden überschrieben.
+	 * des Gleises. Besthende Werte werden addiert.
 	 * 
 	 * Die Wellenlänge beträgt 2 x 3.14... m (also 2 x Pi)
 	 * 
@@ -115,13 +149,15 @@ public class Gleis {
 	public void erzeugeWelleLinkeSchiene(double phasenVerschiebung_m, double amplitute_m) {
 		double x = phasenVerschiebung_m;
 
-		for (int n = 0; n < laengshoeheLinkeSchiene.size(); n++)
-			this.laengshoeheLinkeSchiene.set(n, amplitute_m * Math.sin(x++));
+		for (int n = 0; n < laengshoeheLinkeSchiene.size(); n++) {
+			double längshöheIst = this.laengshoeheLinkeSchiene.get(n);
+			this.laengshoeheLinkeSchiene.set(n, amplitute_m * Math.sin(x++) + längshöheIst);
+		}
 	}
 
 	/**
 	 * Erzeugt eine sinusförmige Welle in der rechten Schiene über die gesammte
-	 * Länge des Gleises. Besthende Werte werden überschrieben.
+	 * Länge des Gleises. Bestehende Werte werden addiert.
 	 * 
 	 * @param phasenVerschiebung_m Verschiebung des Nullpunktes der Welle.
 	 * @param amplitute_m          Maximale Auslenkung der Welle in [m].
@@ -129,41 +165,9 @@ public class Gleis {
 	public void erzeugeWelleRechteSchiene(double phasenVerschiebung_m, double amplitute_m) {
 		double x = phasenVerschiebung_m;
 
-		for (int n = 0; n < laengshoeheRechteSchiene.size(); n++)
-			this.laengshoeheRechteSchiene.set(n, amplitute_m * Math.sin(x++));
-	}
-
-	/**
-	 * Gegenseitige Höhenlage an einem beliebigen Punkt im Gleis.
-	 * 
-	 * @param imMeterVonGleisanfang_m Stationierung vom Beginn des Gleises aus
-	 *                                gesehen. Genauigkeit: +/- wegschritt.
-	 * 
-	 * @return Gegenseitige Höhenlage. Die Linke Schiene ist der Bezugsstrang, der
-	 *         das Vorzeichen festlegt. - heist: links tiefer als rechts. + heist:
-	 *         links höher als rechts.
-	 */
-	public double getGH_m(double imMeterVonGleisanfang_m) {
-		int messpunkt = (int) (imMeterVonGleisanfang_m / this.wegschritt_m);
-		double linkerWert_m = this.laengshoeheLinkeSchiene.get(messpunkt);
-		double rechterWert_m = this.laengshoeheRechteSchiene.get(messpunkt);
-		return -1 * (rechterWert_m - linkerWert_m);
-	}
-
-	/**
-	 * Verwindung an einer beliebigen Stelle, mit einer beliebigen Messbasislänge.
-	 * 
-	 * @param imMeterVomGleisanfang_m Messpunkt. Der Zweite Messpunkt liegt um die
-	 *                                Länge der Messbasis, entgegen der
-	 *                                aufsteigenden Kilometrierung, vor diesem
-	 *                                Messpunkt.
-	 * 
-	 * @param laengeMessbasis_m       Zugrundeliegende Messbasis.
-	 * @return Verwindung in Promille.
-	 */
-	public double getVerwindung_P(double imMeterVomGleisanfang_m, double laengeMessbasis_m) {
-		return Math
-				.abs((this.getGH_m(imMeterVomGleisanfang_m) - this.getGH_m(imMeterVomGleisanfang_m - laengeMessbasis_m))
-						/ laengeMessbasis_m);
+		for (int n = 0; n < laengshoeheRechteSchiene.size(); n++) {
+			double längshöheIst = this.laengshoeheRechteSchiene.get(n);
+			this.laengshoeheRechteSchiene.set(n, amplitute_m * Math.sin(x++) + längshöheIst);
+		}
 	}
 }
