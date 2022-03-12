@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Allgemeines.KoordinatenPaar;
+import Bogen.Pfeilhöhe;
+import Bogen.PfeilhöhenTabelle;
+import Bogen.Rechner;
+import Bogen.Sehne;
 import Gradiente.Neigungswechsel;
 import GleisModell.Gleis;
 import GleisModell.Verwindung;
@@ -26,6 +30,9 @@ public class Main {
 		System.out.println("Demo");
 		System.out.println("");
 		
+		//
+		// Berechnet einen Neigungswechsel
+		//
 		/*
 		Neigungswechsel nw=new Neigungswechsel(1.80000f,6.749f,-5.454f,10653.0f);
 		
@@ -70,7 +77,7 @@ public class Main {
 			System.out.println(o.getBezeichnungX()+"=\t "+o.getX()+"m  \t y="+(o.getY()*1000)+"mm");
 			*/
 		
-		
+		/*
 		//
 		// Gleis
 		//
@@ -95,5 +102,24 @@ public class Main {
 		
 		double vw_p=Verwindung.getVerwindung_P(myGleis,100,3.6);
 		System.out.println("VW="+vw_p+" Promille");
+	*/
+		
+		//
+		// Berechnet für eine beliebige Sehne die Pfeilhöhen im Vollbogen und im Übergang zwischen
+		// einer Geraden und einem Bogen.
+		//
+		Sehne sehne=new Sehne(4,6);
+		
+		PfeilhöhenTabelle hfTabelle=new PfeilhöhenTabelle();
+		
+		hfTabelle=Rechner.geradeVollbogen(sehne, 190, .25f);
+		
+		float x,hf;
+		for (int i=0;i<=hfTabelle.getLength()-1;i++){	
+			Pfeilhöhe p=hfTabelle.getPfeilhöheAtIndex(i);
+			
+			System.out.println("x="+p.getX()+"  hf="+p.getHf()*1000);
+		}	
 	}
+		
 }
